@@ -75,6 +75,7 @@ contract Bazaar {
     constructor() {
         admin = msg.sender;
         AuthList[msg.sender] = Auth.both;
+        AuthList[0x70997970C51812dc3A010C7d01b50e0d17dc79C8] = Auth.both;
     }
 
     function giveAuth(address ad, Auth aut ) external returns(Auth){
@@ -115,7 +116,7 @@ contract Bazaar {
         require(item.active, "Product is not active for selling now");
         Locked[item.ProductID] = true;
         item.buyer =  payable(msg.sender);   
-        
+        item.active = false;
         emit sold(_listingID, address(item.product), item.ProductID, item.amount, item.amountType, item.price, item.producer, item.buyer, item.producerConf, item.buyerConf);      
     }
 

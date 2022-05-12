@@ -7,8 +7,8 @@ const Navigation = ({ metamask, account }) => {
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
       <Container class="container">
         <NavbarBrand href="/">
-          <img src={logo} width="40" height="40" />
-          &nbsp; 1Bazaar-TR
+          
+          &nbsp; Bazaar-TR
         </NavbarBrand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">

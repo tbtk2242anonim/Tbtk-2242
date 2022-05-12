@@ -17,7 +17,7 @@ function App() {
   const [product, setProduct] = useState({});
   const [bazaar, setBazaar] = useState({});
   const [loadState, setLoadState] = useState(true);
-  const [total, setTotal] = useState(0)
+ 
   const Metamask = async () => {
     const accounts = await window.ethereum.request({
       method: "eth_requestAccounts",
@@ -70,8 +70,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home product={product} bazaar={bazaar} />} />
             <Route path="/create" element={<Create  product={product} bazaar={bazaar} />} />
-            <Route path="/my-listed-items" element={<ListedItems />} />
-            <Route path="/purchases" element={<Purchase />} />
+            <Route path="/my-listed-items" element={<ListedItems product={product} bazaar={bazaar} account={account}/>} />
+            <Route path="/purchases" element={<Purchase product={product} bazaar={bazaar} account={account} />} />
           </Routes>
         ) }
       </div>

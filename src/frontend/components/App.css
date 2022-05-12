@@ -7,6 +7,11 @@
   font-style: italic;
 }
 
+.AppBold{
+  text-align: center;
+  font-size: calc(2vmin);
+}
+
 
 .App-logo {
   height: 40vmin;

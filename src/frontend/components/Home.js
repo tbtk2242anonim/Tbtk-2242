@@ -73,11 +73,11 @@ const Home = ({ bazaar, product }) => {
                   <Card.Img variant="top" src={item.image} />
                   <Card.Body>
                     <h2 class="App">{item.name}</h2>
-                    <Card.Text>
+                    <Card.Text class="App">
                       <hr></hr>
                       {item.description}
                     </Card.Text>
-                    <h3>
+                    <h3 class="App">
                       {item.amount*1}-{item.amountType}
                     </h3>
                   </Card.Body>
