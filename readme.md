@@ -3,7 +3,8 @@
 - NodeJS versiyon 16.5.0 yada daha aşağısı 
 - Hardhat
 
-#Çalıştırmak için sırasıyla
+# Çalıştırmak için sırasıyla
+
 ### 1. Gerekli paketleri yükleme:
 
 $ npm install
