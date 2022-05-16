@@ -7,7 +7,7 @@ export default function Purchases({ bazaar, product, account }) {
   const [purchases, setPurchases] = useState([])
   
   const loadPurchasedItems = async () => {  
-    console.log(bazaar)
+    //console.log(bazaar)
     const filtered = await bazaar.queryFilter(bazaar.filters.sold(null,null,null,null,null,null,null,account,null,null))
     const allpurchases = await Promise.all(filtered.map(async bazaarProduct => {
 

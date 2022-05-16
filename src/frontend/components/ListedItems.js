@@ -22,7 +22,7 @@ function allSoldItems(ListedItems) {
                     </h3>
                   </Card.Body>
                   <Card.Footer>
-                    <div className='d-grid bg-dark'>
+                    <div className='d-grid'>
                       <h2 variant="outline-light"  size="lg">
                         Sold For {ethers.utils.formatEther(item.price)} ETH
                       </h2>
@@ -48,7 +48,7 @@ export default function ListedItems({ bazaar, product, account }) {
     let itemLocked = []
     for (let i = 1; i <= BazaarCount; i++) {
       const bazaarProduct = await bazaar.BazaarList(i)
-      if (bazaarProduct.producer.toLowerCase() === account) {
+      if (bazaarProduct.producer.toLowerCase() === account || bazaarProduct.buyer.toLowerCase() === account) {
        
         const dataUri = await product.tokenURI(bazaarProduct.ProductID);
         const fetchRes = await fetch(dataUri);
@@ -63,12 +63,12 @@ export default function ListedItems({ bazaar, product, account }) {
             amountType: bazaarProduct.amountType,
             price: bazaarProduct.price,
             producer: bazaarProduct.producer,
-            buyer: bazaarProduct.buyer
+            buyer: bazaarProduct.buyer,
         }
         listedItems.push(item)
         if (bazaarProduct.producerConf && bazaarProduct.buyerConf) soldItems.push(item)
         const lockedItem = await bazaar.Locked(bazaarProduct.ProductID); 
-        if (lockedItem && !bazaarProduct.producerConf && !bazaarProduct.buyerConf ) itemLocked.push(item)
+        if (lockedItem) itemLocked.push(item)
       }
     }
     setLoading(false)
@@ -85,7 +85,7 @@ export default function ListedItems({ bazaar, product, account }) {
       loadListedItems();
     }else if (bazaarProduct.buyer.toLowerCase() === account) {
       await (
-        await bazaar.confirmProducer(bazaarProduct.listingID)
+        await bazaar.confirmBuyer(bazaarProduct.listingID)
       ).wait();
       loadListedItems();
     }
@@ -108,8 +108,8 @@ export default function ListedItems({ bazaar, product, account }) {
   return (
     <div className="flex justify-center">
       {ListedItems.length > 0 ?
-        <div className="px-5 py-3 container">
-            <h2>Listed</h2>
+        <div className="pxListedItems-5 py-3 container">
+            <h2>Listed Items And Orders</h2>
             <Row xs={2} md={3} lg={5} className="g-4 py-5">
             {ListedItems.map(item => (
               <Col key={item.listingID} className="overflow-hidden">
@@ -129,7 +129,7 @@ export default function ListedItems({ bazaar, product, account }) {
                   {itemLocked.map(locked => (item.listingID == locked.listingID ? 
                   <div className='d-grid bg-dark'>
                      <Button variant="outline-light" onClick={() => approval(item)} size="lg">
-                        Approve Sale
+                        Approve {item.producer.toLowerCase() === account ? "Sell" : "Buy"}
                      </Button>
                   </div>
                     : 
