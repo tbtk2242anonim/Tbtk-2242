@@ -4,7 +4,7 @@ import { Row, Col, Card,Button } from 'react-bootstrap'
 
 function allSoldItems(ListedItems) {
   return (
-    <>
+    <div>
       <h2>Sold</h2>
       <Row xs={2} md={3} lg={5} className="g-4 py-5">
             {ListedItems.map(item => (
@@ -31,7 +31,7 @@ function allSoldItems(ListedItems) {
               </Card> 
               </Col> ))}
           </Row>
-    </>
+    </div>
   )
 }
 

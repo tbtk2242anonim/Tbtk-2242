@@ -112,6 +112,7 @@ contract Bazaar {
     function purchaseBazaarItem (uint _listingID) external validID(_listingID) payable{
         BazaarItem storage item = BazaarList[_listingID];
         require(item.buyer == address(0), "This item already sold");
+        require(item.buyer != item.producer, "You can't buy own items");
         require(msg.value >= item.price, "You don't have enough money for these buying");
         require(item.active, "Product is not active for selling now");
         Locked[item.ProductID] = true;

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { Row, Col, Card, Button } from 'react-bootstrap';
 
-const Home = ({ bazaar, product }) => {
+const Home = ({ bazaar, product , account}) => {
   const [loadingpage, setLoading] = useState(true);
   const [ListedItems, setListing] = useState([]);
   
@@ -83,7 +83,7 @@ const Home = ({ bazaar, product }) => {
                   </Card.Body>
                   <Card.Footer>
                     <div className='d-grid bg-dark'>
-                      <Button variant="outline-light" onClick={() => buy(item)} size="lg">
+                      <Button class="buybutton" variant="outline-light" onClick={() => buy(item)} size="lg" disabled={(item.producer.toLowerCase() === account) ? true : false } > 
                         Buy for {ethers.utils.formatEther(item.price)} ETH
                       </Button>
                     </div>

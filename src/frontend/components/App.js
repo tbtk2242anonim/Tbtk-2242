@@ -60,15 +60,15 @@ function App() {
       <div>
         <Navigation metamask={Metamask} account={account} />
         {loadState ? (
-          <div class="d-flex justify-content-center align-items-center my-5"  >
-            <div class="spinner-border d-flex my-5" role="status">
-              <span class="visually-hidden">Loading...</span>
+          <div className="d-flex justify-content-center align-items-center my-5"  >
+            <div className="spinner-border d-flex my-5" role="status">
+              <span className="visually-hidden">Loading...</span>
             </div>
             <strong className='mx-3'>Please, Connect the Metamask...</strong>
           </div>
         ) : (
           <Routes>
-            <Route path="/" element={<Home product={product} bazaar={bazaar} />} />
+            <Route path="/" element={<Home product={product} bazaar={bazaar} account={account} />} />
             <Route path="/create" element={<Create  product={product} bazaar={bazaar} />} />
             <Route path="/my-listed-items" element={<ListedItems product={product} bazaar={bazaar} account={account}/>} />
             <Route path="/purchases" element={<Purchase product={product} bazaar={bazaar} account={account} />} />
