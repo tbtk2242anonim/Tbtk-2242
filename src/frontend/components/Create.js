@@ -4,7 +4,7 @@ import { Row, Form, Button } from 'react-bootstrap'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
 const client = ipfsHttpClient('https://ipfs.infura.io:5001/api/v0')
 
-const Create = ({ bazaar, product }) => {
+const Create = ({ bazaar, product, role }) => {
   const [image, setImage] = useState('')
   const [amount, setAmount] = useState(null)
   const [amountType, setAmountType] = useState('')
@@ -40,8 +40,6 @@ const Create = ({ bazaar, product }) => {
     await(await product.mint(uri)).wait()
     // get tokenId of new nft 
     const id = await product.ProductID()
-    
-
     // approve marketplace to spend nft
     await(await product.setApprovalForAll(bazaar.address, true)).wait()
     // add nft to marketplace
@@ -67,7 +65,7 @@ const Create = ({ bazaar, product }) => {
               <Form.Control onChange={(e) => setPrice(e.target.value)} size="lg" required type="number" placeholder="Price in ETH" />
               
               <div className="d-grid px-0">
-                <Button onClick={createAndListing} variant="outline-dark" size="lg">
+                <Button disabled={(role === 0) ? true : false } onClick={createAndListing} variant="outline-dark" size="lg">
                   Create & List Product!
                 </Button>
               </div>

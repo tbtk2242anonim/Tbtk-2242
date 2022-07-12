@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { Row, Col, Card, Button } from 'react-bootstrap';
 
-const Home = ({ bazaar, product , account}) => {
+const Home = ({ bazaar, product , account, role}) => {
   const [loadingpage, setLoading] = useState(true);
   const [ListedItems, setListing] = useState([]);
   
@@ -10,6 +10,7 @@ const Home = ({ bazaar, product , account}) => {
   const LoadingListedItems = async () => {
     let ListedItems = [];
     const BazaarCount = await bazaar.BazaarCount();
+    
     
    
     for (let i = 1; i <= BazaarCount; i++) {
@@ -83,7 +84,7 @@ const Home = ({ bazaar, product , account}) => {
                   </Card.Body>
                   <Card.Footer>
                     <div className='d-grid bg-dark'>
-                      <Button class="buybutton" variant="outline-light" onClick={() => buy(item)} size="lg" disabled={(item.producer.toLowerCase() === account) ? true : false } > 
+                      <Button class="buybutton" variant="outline-light" onClick={() => buy(item)} size="lg" disabled={((role === 0) || (item.producer.toLowerCase() === account)) ? true : false } > 
                         Buy for {ethers.utils.formatEther(item.price)} ETH
                       </Button>
                     </div>

@@ -8,6 +8,7 @@ contract Bazaar {
     mapping(uint256 => BazaarItem) public BazaarList;
     mapping(uint256 => bool) public Locked;
     mapping(uint256 => bool) public PaymentTrack;
+    mapping(address => string) public AuthName;
     
     uint256 public BazaarCount;
     
@@ -75,12 +76,13 @@ contract Bazaar {
     constructor() {
         admin = msg.sender;
         AuthList[msg.sender] = Auth.both;
-        AuthList[0x70997970C51812dc3A010C7d01b50e0d17dc79C8] = Auth.both;
+        AuthName[msg.sender] = "Admin";
     }
 
-    function giveAuth(address ad, Auth aut ) external returns(Auth){
+    function giveAuth(string memory name,address ad, Auth aut ) external returns(Auth){
         require(msg.sender == admin, "You are not authorized ");
         AuthList[ad] = aut;
+        AuthName[ad] = name;
         return AuthList[ad]; 
     }
 
@@ -107,6 +109,8 @@ contract Bazaar {
 
         emit Listing(BazaarCount,address(_product),_productID,_amount,_amountType,_price,msg.sender,true);
     }
+
+    
 
 
     function purchaseBazaarItem (uint _listingID) external validID(_listingID) payable{
