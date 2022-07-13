@@ -12,6 +12,8 @@ import Create from "./Create";
 import ListedItems from "./ListedItems";
 import Purchase from "./Purchase";
 import Home from "./Home";
+import Approvement from "./Approvement"
+import Sell from "./Sell"
 
 function App() {
   const [account, setAccount] = useState(null);
@@ -86,7 +88,9 @@ function App() {
             <Route path="/authorize" element={<Authorize product={product} bazaar={bazaar} account={account} admin={admin} />} />
             <Route path="/create" element={<Create  product={product} bazaar={bazaar} role={role}/>} />
             <Route path="/my-listed-items" element={<ListedItems product={product} bazaar={bazaar} account={account}/>} />
+            <Route path="/approvement" element={<Approvement product={product} bazaar={bazaar} account={account}/>} />
             <Route path="/purchases" element={<Purchase product={product} bazaar={bazaar} account={account} />} />
+            <Route path="/sells" element={<Sell product={product} bazaar={bazaar} account={account} />} />
           </Routes>
         ) }
       </div>

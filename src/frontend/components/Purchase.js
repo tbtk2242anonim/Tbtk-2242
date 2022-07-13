@@ -47,40 +47,47 @@ export default function Purchases({ bazaar, product, account }) {
   );
   
   return (
-    <div className="flex justify-center">
-      {purchases.length > 0 ?
-        <div className="px-5 container">
-          <Row xs={2} md={3} lg={5} className="g-4 py-5">
-            {purchases.map(item => (
-              <Col key={item.listingID} className="overflow-hidden">
-              <Card class="App border border-dark rounded" >
-                  <Card.Img variant="top" src={item.image} />
-                  <Card.Body>
-                    <h2 class="App">{item.name}</h2>
-                    <Card.Text class="App">
-                      <hr></hr>
-                      {item.description}
-                    </Card.Text>
-                    <h3 class="App">
-                      {item.amount*1}-{item.amountType}
-                    </h3>
-                  </Card.Body>
-                  <Card.Footer>
-                    <div className='d-grid'>
-                      <h2 variant="outline-light"  size="lg">
-                        You bought for {ethers.utils.formatEther(item.price)} ETH
-                      </h2>
-                    </div>
-                  </Card.Footer>
-              </Card> 
-              </Col> ))}
-          </Row>
-        </div>
-        : (
-            <div class="d-flex justify-content-center align-items-center my-5">
+    <div className="container-fluid mt-5">
+    <div className="row">
+      <main
+        role="main"
+        className="col-lg-12 mx-auto"
+        style={{ maxWidth: "1000px" }}
+      >
+        {purchases.length > 0 ? (
+          <div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Image</th>
+                  <th scope="col">Seller</th>
+                  <th scope="col">Amount</th>
+                  <th scope="col">Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {purchases.map((p) => (
+                  <tr key={parseInt(p.listingID)}>
+                    <th scope="row">{parseInt(p.listingID)}</th>
+                    <td>{p.name}</td>
+                    <td><a href={p.image}>Show</a></td>
+                    <td>{p.producer}</td>
+                    <td>{parseInt(p.amount)}-{p.amountType}</td>
+                    <td>{ethers.utils.formatEther(p.price)} ETH</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div class="d-flex justify-content-center align-items-center my-5">
             <h1>You don't have any bought products.</h1>
           </div>
         )}
+      </main>
     </div>
+  </div>
   );
 }

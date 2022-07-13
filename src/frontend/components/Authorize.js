@@ -6,7 +6,7 @@ const Authorize = ({ bazaar, product, account, admin }) => {
   const [name, setName] = useState('');
   const [role, setRole] = useState(null);
   const [authList, setAuthList] = useState([]);
-  const [nowEmpty, setEmtyFlag] = useState(false);
+  const [nowEmpty, setEmptyFlag] = useState(false);
 
   useEffect(() => {
     //console.log("updated");
@@ -56,8 +56,8 @@ const Authorize = ({ bazaar, product, account, admin }) => {
   //0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC 3. cüzdan
   const changeAuth = async () => {
       
-    if (!address || !name || !role) return setEmtyFlag(true);
-    setEmtyFlag(false);
+    if (!address || !name || !role) return setEmptyFlag(true);
+    setEmptyFlag(false);
     try {
       const result = await bazaar.giveAuth(name,address, role)
       //console.log("Başarı ile rol atandı: " ,result)
@@ -180,8 +180,3 @@ const Authorize = ({ bazaar, product, account, admin }) => {
 };
 
 export default Authorize;
-
-
-<div class="alert alert-danger" role="alert">
-                           This user not registered !
-                          </div>

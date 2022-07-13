@@ -25,11 +25,13 @@ const Navigation = ({ metamask, account, admin, role}) => {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <nav class="me-auto navbar-nav">
-            <Nav.Link as={Link} class="nav-link active" aria-current="page" to="/"> Home </Nav.Link>{
-            admin === account ? (<Nav.Link as={Link} class="nav-link" to="/authorize"> Authorize </Nav.Link>) : null }
-            <Nav.Link as={Link} class="nav-link" to="/create"> Create Listing </Nav.Link>
-            <Nav.Link as={Link} class="nav-link" to="/my-listed-items"> My Listed Items </Nav.Link>
-            <Nav.Link as={Link} class="nav-link" to="/purchases"> My Purchases </Nav.Link>
+            <Nav.Link as={Link} class="nav-link active" aria-current="page" to="/"> Home </Nav.Link>
+            {admin === account ? (<Nav.Link as={Link} class="nav-link" to="/authorize"> Authorize </Nav.Link>) : null }
+            {role === 1 || role === 3 ? (<Nav.Link as={Link} class="nav-link" to="/create"> Create Listing </Nav.Link>) : null}
+            {role === 1 || role === 3 ? (<Nav.Link as={Link} class="nav-link" to="/my-listed-items"> My Listed Items </Nav.Link>) : null}
+            {role !== ''&& role !== 0 ? (<Nav.Link as={Link} class="nav-link" to="/approvement"> My Approvements </Nav.Link>) : null}
+            {role === 1 || role === 3 ? (<Nav.Link as={Link} class="nav-link" to="/sells">My Sells </Nav.Link>) : null}
+            {role === 2 || role === 3 ? (<Nav.Link as={Link} class="nav-link" to="/purchases"> My Purchases </Nav.Link>):null}s
           </nav>
           <nav class="ms-auto navbar-nav">
             {account ? (

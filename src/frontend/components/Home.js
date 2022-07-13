@@ -15,7 +15,7 @@ const Home = ({ bazaar, product , account, role}) => {
    
     for (let i = 1; i <= BazaarCount; i++) {
       const bazaarProduct = await bazaar.BazaarList(i);
-      if (bazaarProduct.active) {
+      if (bazaarProduct.activty == 1) {
         const dataUri = await product.tokenURI(bazaarProduct.ProductID);
         const fetchRes = await fetch(dataUri);
         const metaData = await fetchRes.json();
@@ -30,7 +30,7 @@ const Home = ({ bazaar, product , account, role}) => {
           price: bazaarProduct.price,
           producer: bazaarProduct.producer,
           buyer: bazaarProduct.buyer,
-          active: bazaarProduct.active,
+          activty: bazaarProduct.activty,
           producerConf: bazaarProduct.producerConf,
           buyerConf: bazaarProduct.buyerConf,
         });

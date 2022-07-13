@@ -20,6 +20,14 @@ contract Bazaar {
         both
     }
 
+    enum Active {
+        passive,
+        active,
+        sold,
+        delivered,
+        burned
+    }
+
     event Listing(
         uint256 listingID,
         address indexed product,
@@ -28,7 +36,7 @@ contract Bazaar {
         string amountType,
         uint256 price,
         address indexed producer,
-        bool active
+        Active activty
     );
 
     event sold(
@@ -68,7 +76,7 @@ contract Bazaar {
         uint256 price;
         address payable producer;
         address payable buyer;
-        bool active;
+        Active activty;
         bool producerConf;
         bool buyerConf;
     }
@@ -102,27 +110,50 @@ contract Bazaar {
             _price,
             payable(msg.sender),
             payable(address(0)),
-            true,
+            Active.active,
             false,
             false
         );
 
-        emit Listing(BazaarCount,address(_product),_productID,_amount,_amountType,_price,msg.sender,true);
+        emit Listing(BazaarCount,address(_product),_productID,_amount,_amountType,_price,msg.sender,Active.active);
     }
 
-    
-
+    function burnItem(uint256 _listingID) external returns(uint256){
+        BazaarItem storage item = BazaarList[_listingID];
+        if(item.activty == Active.delivered){ require(item.buyer == address(msg.sender));}
+        else if(item.activty == Active.passive || item.activty == Active.active){require(item.producer == address(msg.sender));}
+        else{require(false, "You are not authorized on this product");}
+        item.producer = payable(address(0));
+        item.buyer = payable(address(0));
+        item.activty = Active.burned;
+        return item.ProductID;
+    }
 
     function purchaseBazaarItem (uint _listingID) external validID(_listingID) payable{
         BazaarItem storage item = BazaarList[_listingID];
         require(item.buyer == address(0), "This item already sold");
         require(item.buyer != item.producer, "You can't buy own items");
         require(msg.value >= item.price, "You don't have enough money for these buying");
-        require(item.active, "Product is not active for selling now");
+        require(item.activty == Active.active , "Product is not active for selling now");
         Locked[item.ProductID] = true;
         item.buyer =  payable(msg.sender);   
-        item.active = false;
-        emit sold(_listingID, address(item.product), item.ProductID, item.amount, item.amountType, item.price, item.producer, item.buyer, item.producerConf, item.buyerConf);      
+        item.activty = Active.sold;
+    }
+    
+    function delistItem (uint _listingID) external validID(_listingID) {
+        BazaarItem storage item = BazaarList[_listingID];
+        require(item.buyer == address(0), "This item already sold");
+        require(item.producer == msg.sender , "This item is not yours");
+        require(item.activty == Active.active , "Product is not active.");   
+        item.activty = Active.passive;
+    }
+
+    function listItem (uint _listingID) external validID(_listingID) {
+        BazaarItem storage item = BazaarList[_listingID];
+        require(item.buyer == address(0), "This item already sold");
+        require(item.producer == msg.sender , "This item is not yours");
+        require(item.activty == Active.passive , "Product is not passive.");   
+        item.activty = Active.active;
     }
 
     function confirmProducer(uint _listingID) external validID(_listingID) returns(bool){
@@ -147,13 +178,13 @@ contract Bazaar {
             PaymentTrack[_listingID] = true;
             item.producer.transfer(item.price);
             item.product.transferFrom(address(this), item.buyer, item.ProductID);
+            item.activty = Active.delivered;
+            emit sold(_listingID, address(item.product), item.ProductID, item.amount, item.amountType, item.price, item.producer, item.buyer, item.producerConf, item.buyerConf);            
             return true;
         }else{
             return false;
             }
         
     }
-
-
     
 }
