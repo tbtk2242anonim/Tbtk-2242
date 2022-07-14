@@ -9,6 +9,7 @@ contract Bazaar {
     mapping(uint256 => bool) public Locked;
     mapping(uint256 => bool) public PaymentTrack;
     mapping(address => string) public AuthName;
+    uint256 public deliveryTime = 30; // 1 day = 86400 seconds
     
     uint256 public BazaarCount;
     
@@ -79,6 +80,7 @@ contract Bazaar {
         Active activty;
         bool producerConf;
         bool buyerConf;
+        uint buyTime;
     }
 
     constructor() {
@@ -112,7 +114,8 @@ contract Bazaar {
             payable(address(0)),
             Active.active,
             false,
-            false
+            false,
+            0
         );
 
         emit Listing(BazaarCount,address(_product),_productID,_amount,_amountType,_price,msg.sender,Active.active);
@@ -138,6 +141,7 @@ contract Bazaar {
         Locked[item.ProductID] = true;
         item.buyer =  payable(msg.sender);   
         item.activty = Active.sold;
+        item.buyTime = block.timestamp + deliveryTime;
     }
     
     function delistItem (uint _listingID) external validID(_listingID) {
@@ -146,6 +150,19 @@ contract Bazaar {
         require(item.producer == msg.sender , "This item is not yours");
         require(item.activty == Active.active , "Product is not active.");   
         item.activty = Active.passive;
+    }
+
+    function giveBack(uint _listingID) external validID(_listingID){
+        BazaarItem storage item = BazaarList[_listingID];
+        require(item.buyer == address(msg.sender) || item.producer == address(msg.sender) || admin == address(msg.sender), "You are not Authorized");
+        require(item.buyTime < block.timestamp, "This item has time to be delivered.");
+        PaymentTrack[_listingID] = false;
+        item.buyer.transfer(item.price);
+        item.buyer = payable(address(0));
+        item.buyTime = 0;
+        item.activty = Active.passive;
+        item.producerConf = false;
+        item.buyerConf = false;
     }
 
     function listItem (uint _listingID) external validID(_listingID) {
