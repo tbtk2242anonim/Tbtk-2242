@@ -1,6 +1,11 @@
 require("@nomiclabs/hardhat-waffle");
 
 module.exports = {
+  networks: {
+    quorum: {
+      url: "http://localhost:22001/", 
+    }
+  },
   solidity: "0.8.4",
   paths: {
     artifacts: "./src/backend/artifacts",

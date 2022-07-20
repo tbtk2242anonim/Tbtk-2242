@@ -31,7 +31,6 @@ const Home = ({ bazaar, product , account, role}) => {
           producer: bazaarProduct.producer,
           buyer: bazaarProduct.buyer,
           activty: bazaarProduct.activty,
-          producerConf: bazaarProduct.producerConf,
           buyerConf: bazaarProduct.buyerConf,
         });
       }

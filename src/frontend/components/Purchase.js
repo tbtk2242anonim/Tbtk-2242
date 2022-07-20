@@ -8,7 +8,7 @@ export default function Purchases({ bazaar, product, account }) {
   
   const loadPurchasedItems = async () => {  
     //console.log(bazaar)
-    const filtered = await bazaar.queryFilter(bazaar.filters.sold(null,null,null,null,null,null,null,account,null,null))
+    const filtered = await bazaar.queryFilter(bazaar.filters.sold(null,null,null,null,null,null,null,account,null))
     const allpurchases = await Promise.all(filtered.map(async bazaarProduct => {
 
       bazaarProduct = bazaarProduct.args

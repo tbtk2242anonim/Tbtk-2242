@@ -3,7 +3,7 @@ import { Row, Form, Button, Table} from "react-bootstrap";
 
 const Authorize = ({ bazaar, product, account, admin }) => {
   const [address, setAdress] = useState('');
-  const [name, setName] = useState('');
+  const [location, setLocation] = useState('');
   const [role, setRole] = useState(null);
   const [authList, setAuthList] = useState([]);
   const [nowEmpty, setEmptyFlag] = useState(false);
@@ -31,14 +31,14 @@ const Authorize = ({ bazaar, product, account, admin }) => {
 
     if (!address) return;
         
-    const Qname = await bazaar.AuthName(address);
+    const Qaddress = await bazaar.AuthAddress(address);
     const Qrole = await bazaar.AuthList(address);
     
     
 
     let item = {
       key: authList.length + 1,
-      name: Qname,
+      location: Qaddress,
       address: address,
       role: Qrole,
     };
@@ -56,10 +56,10 @@ const Authorize = ({ bazaar, product, account, admin }) => {
   //0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC 3. cüzdan
   const changeAuth = async () => {
       
-    if (!address || !name || !role) return setEmptyFlag(true);
+    if (!address || !location || !role) return setEmptyFlag(true);
     setEmptyFlag(false);
     try {
-      const result = await bazaar.giveAuth(name,address, role)
+      const result = await bazaar.giveAuth(location,address, role)
       //console.log("Başarı ile rol atandı: " ,result)
       setAuthList([]);
     } catch (error) {
@@ -76,23 +76,26 @@ const Authorize = ({ bazaar, product, account, admin }) => {
           style={{ maxWidth: "1000px" }}
         >
           <div class="alert alert-info just justify-content-center align-items-center" >
-            A simple info alert—check it out!
+          <div class ="App">If you want to check the role, only the Wallet address part is required.</div>
+          <div class = "App">If you want to assign roles and authorizations, fill in all the fields.</div>
+
+          
           </div>
           <div className="content mx-auto">
             <Row className="g-4">
               <Form.Control
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => setLocation(e.target.value)}
                 size="lg"
                 required
                 type="text"
-                placeholder="Name"
+                placeholder="Location Address"
               />
               <Form.Control
                 onChange={(e) => setAdress(e.target.value)}
                 size="lg"
                 required
                 type="text"
-                placeholder="Address"
+                placeholder="Wallet Address"
               />
               <Form.Select
                 onChange={(e) => setRole(e.target.value)}
@@ -143,7 +146,7 @@ const Authorize = ({ bazaar, product, account, admin }) => {
                   <thead>
                     <tr>
                       <th scope="col">#</th>
-                      <th scope="col">Name</th>
+                      <th scope="col">Location Address</th>
                       <th scope="col">Address</th>
                       <th scope="col">Role</th>
                       <th scope="col"></th>
@@ -153,7 +156,7 @@ const Authorize = ({ bazaar, product, account, admin }) => {
                     {authList.map((auths) => (
                       <tr key={auths.key}>
                         <th scope="row">{auths.key}</th>
-                        <td>{auths.name}</td>
+                        <td>{auths.location}</td>
                         <td>{auths.address}</td>
                         {auths.role === 0 ? (
                           <td class="alert alert-danger" role="alert">

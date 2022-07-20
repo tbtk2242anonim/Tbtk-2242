@@ -6,6 +6,8 @@ import Countdown from 'react-countdown'
 export default function Approvement({ bazaar, product, account }) {
     const [loadingpage, setLoading] = useState(true)
     const [ApprovmentList, setApprovmentList] = useState([])
+    const [key, setKey] = useState(null)
+    const [wrong, setWrong] = useState(false);
     
 
     const loadListedItems = async () => {
@@ -21,7 +23,7 @@ export default function Approvement({ bazaar, product, account }) {
           const dataUri = await product.tokenURI(bazaarProduct.ProductID);
           const fetchRes = await fetch(dataUri);
           const metaData = await fetchRes.json();
-          
+          const lAddress = await bazaar.AuthAddress(bazaarProduct.buyer);
           
           let item = {
               listingID: bazaarProduct.listingID,
@@ -33,9 +35,10 @@ export default function Approvement({ bazaar, product, account }) {
               price: bazaarProduct.price,
               producer: bazaarProduct.producer,
               buyer: bazaarProduct.buyer,
-              producerApprove: bazaarProduct.producerConf,
               buyerApprove: bazaarProduct.buyerConf,
-              buyTime: parseInt(bazaarProduct.buyTime)
+              buyTime: parseInt(bazaarProduct.buyTime),
+              key:bazaarProduct.key,
+              Locationaddress : lAddress
           }
           ApprovmentList.push(item)
         }
@@ -52,6 +55,7 @@ export default function Approvement({ bazaar, product, account }) {
         await (
           await bazaar.giveBack(bazaarProduct.listingID)
         ).wait();
+
         loadListedItems();   
       }
       }catch(e){
@@ -59,21 +63,19 @@ export default function Approvement({ bazaar, product, account }) {
       }
     }
   
-    const approval = async (bazaarProduct) => {
-      if (bazaarProduct.producer.toLowerCase() === account) {
+    const approval = async (bazaarProduct,_key) => {
+      try {
         await (
-          await bazaar.confirmProducer(bazaarProduct.listingID)
+          await bazaar.confirmBuyer(bazaarProduct.listingID,_key)
         ).wait();
+        setWrong(false);
         loadListedItems();
-
-      }else if (bazaarProduct.buyer.toLowerCase() === account) {
-        await (
-          await bazaar.confirmBuyer(bazaarProduct.listingID)
-        ).wait();
-        loadListedItems();
-
+        
+      } catch (e) {
+        setWrong(true);
+      }  
+      
       }
-    }
       
     useEffect(() => {
       loadListedItems()
@@ -94,8 +96,16 @@ export default function Approvement({ bazaar, product, account }) {
         {ApprovmentList.length > 0 ?
           <div className="pxListedItems-5 py-3 container">
               <h2 class=" mt-4">Products Requiring Approval</h2>
-              <Row xs={2} md={3} lg={5} className="g-4 py-5">
+              {wrong ? (
+                  <div class="mt-4 alert alert-danger App" role="alert">
+                    Code Wrong ! Please check the code again.
+                  </div>
+                ) : (
+                  null
+                )}
+              <Row xs={2} md={3} lg={5} className="g-4 py-2">
               {ApprovmentList.map(item => (
+                
                 <Col key={item.listingID} className="overflow-hidden">
                 <Card class="App border border-dark rounded" >
                     <Card.Img variant="top" src={item.image} />
@@ -109,7 +119,15 @@ export default function Approvement({ bazaar, product, account }) {
                       <h3 class="App">
                         {item.amount*1}-{item.amountType}
                       </h3>
-                      
+
+                      {(item.producer.toLowerCase() === account) ? (
+                            <div>
+                              <hr/>
+                                <p class= "App">Delivery Address: {item.Locationaddress}</p>
+                              <hr/>
+                            </div>
+                          ):(null)}
+
                       <p class="App pt-2 pb-0 mb-0">
                         Remaining Time: <Countdown onComplete={()=>(ifNotApproved(item))} date={(item.buyTime)*1000+1000}>
                         <div>
@@ -120,23 +138,34 @@ export default function Approvement({ bazaar, product, account }) {
                         </div>
                         </Countdown>
                       </p>
-                     
+
                       </Card.Body>
+
                     <Card.Footer>
-                        {(item.producerApprove === false && item.producer.toLowerCase() === account) || (item.buyerApprove === false && item.buyer.toLowerCase() === account) ? 
-                            (
-                        <div className='d-grid bg-dark'>
-                          <Button variant="outline-light" onClick={() => approval(item)} size="lg">
-                             Approve {item.producer.toLowerCase() === account ? "Sell" : "Buy"}
-                          </Button>
-                        </div>  
+                    {(item.producer.toLowerCase() === account) ? (
+                            <div className='App'>
+                              <h5>
+                                Code: {parseInt(item.key)}
+                              </h5>
+                            </div>
+                          ):(null)
+                    }
+
+                    {(item.buyer.toLowerCase() === account) ? (
+                      
+                        (item.buyerApprove === false) ?
+                          (
+                            <div class ="App">
+                              <input onChange={(e) => setKey(e.target.value)}  class="form-control form-control-lg mb-1 App" required type="text" placeholder="Key"></input>
+                              <Button variant="outline-dark mt-1" onClick={() => approval(item,key)} size="lg">
+                                  Confirm
+                              </Button>
+                            </div>
+                        ):(
+                            null
                           )
-                        :
-                        <div className = "App">
-                            <h5>You already Approved</h5>
-                        </div>
-                        }
-                           {}               
+                          ):(null)
+                    }
                     </Card.Footer>
                 </Card> 
                 </Col> ))}

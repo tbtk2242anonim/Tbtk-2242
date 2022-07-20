@@ -8,7 +8,7 @@ contract Bazaar {
     mapping(uint256 => BazaarItem) public BazaarList;
     mapping(uint256 => bool) public Locked;
     mapping(uint256 => bool) public PaymentTrack;
-    mapping(address => string) public AuthName;
+    mapping(address => string) public AuthAddress;
     uint256 public deliveryTime = 30; // 1 day = 86400 seconds
     
     uint256 public BazaarCount;
@@ -49,7 +49,6 @@ contract Bazaar {
         uint256 price,
         address indexed producer,
         address indexed buyer,
-        bool producerConf,
         bool buyerConf      
     );
 
@@ -78,21 +77,21 @@ contract Bazaar {
         address payable producer;
         address payable buyer;
         Active activty;
-        bool producerConf;
         bool buyerConf;
         uint buyTime;
+        uint256 key;
     }
 
     constructor() {
         admin = msg.sender;
         AuthList[msg.sender] = Auth.both;
-        AuthName[msg.sender] = "Admin";
+        AuthAddress[msg.sender] = "Admin";
     }
 
     function giveAuth(string memory name,address ad, Auth aut ) external returns(Auth){
         require(msg.sender == admin, "You are not authorized ");
         AuthList[ad] = aut;
-        AuthName[ad] = name;
+        AuthAddress[ad] = name;
         return AuthList[ad]; 
     }
 
@@ -114,7 +113,7 @@ contract Bazaar {
             payable(address(0)),
             Active.active,
             false,
-            false,
+            0,
             0
         );
 
@@ -142,6 +141,7 @@ contract Bazaar {
         item.buyer =  payable(msg.sender);   
         item.activty = Active.sold;
         item.buyTime = block.timestamp + deliveryTime;
+        item.key = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender,item.buyer,item.amount))) % 1000000;    
     }
     
     function delistItem (uint _listingID) external validID(_listingID) {
@@ -161,7 +161,6 @@ contract Bazaar {
         item.buyer = payable(address(0));
         item.buyTime = 0;
         item.activty = Active.passive;
-        item.producerConf = false;
         item.buyerConf = false;
     }
 
@@ -173,17 +172,11 @@ contract Bazaar {
         item.activty = Active.active;
     }
 
-    function confirmProducer(uint _listingID) external validID(_listingID) returns(bool){
-        BazaarItem storage item = BazaarList[_listingID];
-        require(msg.sender == item.producer , "you are not producer of this item.");
-        item.producerConf = true;
-        return confirmCheck(_listingID);
-    }
-
-    function confirmBuyer(uint _listingID) external validID(_listingID) returns(bool){
+    function confirmBuyer(uint _listingID, uint _key) external validID(_listingID) returns(bool){
         BazaarItem storage item = BazaarList[_listingID];
         require(item.buyer != address(0), "Buyer address error");
         require(msg.sender == item.buyer , "you are not buyer of this item.");
+        require(item.key == _key, "Thats not correct key");
         item.buyerConf = true;
         return confirmCheck(_listingID);
     }
@@ -191,12 +184,12 @@ contract Bazaar {
     function confirmCheck(uint _listingID) private validID(_listingID) returns(bool){
         require(PaymentTrack[_listingID] == false, "This order has already been completed.");
         BazaarItem storage item = BazaarList[_listingID];
-        if(item.producerConf == true && item.buyerConf == true){
+        if(item.buyerConf == true){
             PaymentTrack[_listingID] = true;
             item.producer.transfer(item.price);
             item.product.transferFrom(address(this), item.buyer, item.ProductID);
             item.activty = Active.delivered;
-            emit sold(_listingID, address(item.product), item.ProductID, item.amount, item.amountType, item.price, item.producer, item.buyer, item.producerConf, item.buyerConf);            
+            emit sold(_listingID, address(item.product), item.ProductID, item.amount, item.amountType, item.price, item.producer, item.buyer, item.buyerConf);            
             return true;
         }else{
             return false;
